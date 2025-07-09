@@ -1,37 +1,71 @@
+/* ========================================
+   Base Styles
+   ======================================== */
+
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
-}
-body {
+    margin-bottom: 60px;
     background-color: #f8f9fa;
 }
+
+.btn.active {
+    font-weight: bold;
+    outline: 2px solid #0d6efd;
+}
+
+/* ========================================
+   Form Styles
+   ======================================== */
+
+/* Focus states for Bootstrap form elements */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* Floating label placeholder alignment */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Input group styling */
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+/* Checkbox with icon styling */
+.form-check-label i {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* ========================================
+   Card Styles
+   ======================================== */
 
 .card:hover {
     transform: translateY(-5px);
@@ -39,6 +73,35 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+.card-title {
+    font-size: 1.5rem;
+}
+
+/* ========================================
+   Details Page
+   ======================================== */
+
+dl.row {
+    margin-bottom: 1rem;
+}
+
+dt {
+    color: #555;
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
 footer a {
     text-decoration: none;
+}
+
+.card-body h2 small {
+    color: #6c757d;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
 }

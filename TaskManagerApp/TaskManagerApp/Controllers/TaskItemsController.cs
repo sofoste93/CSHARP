@@ -20,14 +20,25 @@ namespace TaskManagerApp.Controllers
         }
 
         // GET: /TaskItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filter)
         {
-
             var userId = GetCurrentUserId();
-            var tasks = await _context.TaskItems
-                .Where(t => t.UserId == userId)
-                .OrderByDescending(t => t.CreatedAt)
-                .ToListAsync();
+
+            IQueryable<TaskItem> query = _context.TaskItems
+                .Where(t => t.UserId == userId);
+
+            // Apply filter based on query string parameter
+            switch (filter?.ToLower())
+            {
+                case "open":
+                    query = query.Where(t => !t.IsCompleted);
+                    break;
+                case "completed":
+                    query = query.Where(t => t.IsCompleted);
+                    break;
+            }
+
+            var tasks = await query.OrderByDescending(t => t.CreatedAt).ToListAsync();
             return View(tasks);
         }
 
@@ -64,19 +75,17 @@ namespace TaskManagerApp.Controllers
                 return Unauthorized("Impossible de déterminer l'utilisateur.");
             }
 
-
-
             if (ModelState.IsValid)
-                {
-                    taskItem.UserId = userId;
-                    taskItem.CreatedAt = DateTime.UtcNow;
-                    taskItem.IsCompleted = false;
+            {
+                taskItem.UserId = userId;
+                taskItem.CreatedAt = DateTime.UtcNow;
+                taskItem.IsCompleted = false;
 
-                    _context.Add(taskItem);
-                    await _context.SaveChangesAsync();
-                    TempData["NotificationMessage"] = "success:Tâche créée avec succès.";
-                    return RedirectToAction(nameof(Index));
-                }
+                _context.Add(taskItem);
+                await _context.SaveChangesAsync();
+                TempData["NotificationMessage"] = "success:Tâche créée avec succès.";
+                return RedirectToAction(nameof(Index));
+            }
             return View(taskItem);
         }
 
@@ -108,7 +117,7 @@ namespace TaskManagerApp.Controllers
             // To prevent overwriting properties like CreatedAt, fetch the original task
             // from the database first. This is more efficient and safer
             var taskToUpdate = await _context.TaskItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-            if (taskToUpdate == null) 
+            if (taskToUpdate == null)
             {
                 // The task doesn't exist or doesn't belong to the current user.
                 return NotFound();
@@ -120,17 +129,17 @@ namespace TaskManagerApp.Controllers
             ModelState.Remove(nameof(TaskItem.CreatedAt));
 
             if (ModelState.IsValid)
-                {
-                    // Update the properties of the tracked entity with the values from the form.
-                    // This ensures properties not in the form (like CreatedAt) are not overwritten.
-                    taskToUpdate.Title = taskItemFromForm.Title;
-                    taskToUpdate.Description = taskItemFromForm.Description;
-                    taskToUpdate.IsCompleted = taskItemFromForm.IsCompleted;
+            {
+                // Update the properties of the tracked entity with the values from the form.
+                // This ensures properties not in the form (like CreatedAt) are not overwritten.
+                taskToUpdate.Title = taskItemFromForm.Title;
+                taskToUpdate.Description = taskItemFromForm.Description;
+                taskToUpdate.IsCompleted = taskItemFromForm.IsCompleted;
 
-                    await _context.SaveChangesAsync();
-                    TempData["NotificationMessage"] = "success:Tâche mise à jour avec succès.";
-                    return RedirectToAction(nameof(Index));
-                }
+                await _context.SaveChangesAsync();
+                TempData["NotificationMessage"] = "success:Tâche mise à jour avec succès.";
+                return RedirectToAction(nameof(Index));
+            }
             return View(taskItemFromForm);
         }
 

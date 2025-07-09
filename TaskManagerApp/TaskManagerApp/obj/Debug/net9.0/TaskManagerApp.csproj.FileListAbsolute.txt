@@ -289,4 +289,5 @@ C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\r
 C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.pdb
 C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.genruntimeconfig.cache
 C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\ref\TaskManagerApp.dll
-C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\compressed\7y2dotgbtg-8eefz5z549.gz
+C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.sourcelink.json
+C:\Users\User\myprojects\CSHARP\TaskManagerApp\TaskManagerApp\obj\Debug\net9.0\compressed\7y2dotgbtg-yipcacjjed.gz

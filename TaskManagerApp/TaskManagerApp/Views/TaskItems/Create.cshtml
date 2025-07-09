@@ -1,32 +1,53 @@
 @model TaskManagerApp.Models.TaskItem
 @{
-    ViewData["Title"] = "Créer une tâche";
+    ViewData["Title"] = "Créer une nouvelle tâche";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container my-4">
+    <h2 class="mb-4">
+        <i class="bi bi-plus-circle"></i> @ViewData["Title"]
+    </h2>
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-}
-<div class="alert alert-info" role="alert">
-    Veuillez remplir les champs ci-dessous pour créer une nouvelle tâche.
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                        <input asp-for="Title" class="form-control" placeholder="Titre de la tâche" />
+                    </div>
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Détails ou instructions..."></textarea>
+                    </div>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="IsCompleted" class="form-check-input" />
+                    <label class="form-check-label" for="IsCompleted">
+                        <i class="bi bi-check-circle-fill text-success"></i> Tâche terminée
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Créer
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Enregistrer</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
-</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

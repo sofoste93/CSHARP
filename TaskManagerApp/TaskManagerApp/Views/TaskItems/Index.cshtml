@@ -1,46 +1,113 @@
 @model IEnumerable<TaskManagerApp.Models.TaskItem>
 @{
-    ViewData["Title"] = "Mes tâches";
+    ViewData["Title"] = "Tableau de bord des tâches";
 }
 
 <partial name="_Notification" />
 
-<h1>@ViewData["Title"]</h1>
-<p><a asp-action="Create" class="btn btn-primary">Nouvelle tâche</a></p>
+<div class="container my-4">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Titre</th>
-            <th>Créé le</th>
-            <th>Statut</th>
-            <th class="text-end">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.Title</td>
-            <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
-            <td>
-                @if (item.IsCompleted)
-                {
-                    <span class="badge bg-success">Terminé</span>
-                }
-                else
-                {
-                    <span class="badge bg-warning text-dark">Ouvert</span>
-                }
-            </td>
-            <td class="text-end">
-                <div class="btn-group btn-group-sm" role="group">
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Voir</a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Éditer</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Supprimer</a>
-                </div>
-            </td>
-        </tr>
+    <!-- Page Title & Create Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-grid"></i> Tableau de bord des tâches</h2>
+        <a asp-action="Create" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Nouvelle tâche
+        </a>
+    </div>
+
+    @{
+        // Summary Stats
+        var totalTasks = Model.Count();
+        var completedTasks = Model.Count(t => t.IsCompleted);
+        var openTasks = totalTasks - completedTasks;
     }
-    </tbody>
-</table>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4 text-center">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <i class="bi bi-list-task display-5 text-primary mb-3"></i>
+                    <h5 class="card-title">Toutes les tâches</h5>
+                    <p class="fs-3 fw-bold text-primary">@totalTasks</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <i class="bi bi-check-circle display-5 text-success mb-3"></i>
+                    <h5 class="card-title">Tâches terminées</h5>
+                    <p class="fs-3 fw-bold text-success">@completedTasks</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <i class="bi bi-exclamation-circle display-5 text-warning mb-3"></i>
+                    <h5 class="card-title">Tâches ouvertes</h5>
+                    <p class="fs-3 fw-bold text-warning">@openTasks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="mb-4 d-flex flex-wrap gap-2">
+        <a asp-action="Index" class="btn btn-outline-primary @(string.IsNullOrEmpty(Context.Request.Query["filter"]) ? "active" : "")">
+            Toutes (@totalTasks)
+        </a>
+        <a asp-action="Index" asp-route-filter="open" class="btn btn-outline-warning @(Context.Request.Query["filter"] == "open" ? "active" : "")">
+            Ouvertes (@openTasks)
+        </a>
+        <a asp-action="Index" asp-route-filter="completed" class="btn btn-outline-success @(Context.Request.Query["filter"] == "completed" ? "active" : "")">
+            Terminées (@completedTasks)
+        </a>
+    </div>
+
+    <!-- Task Cards -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            Aucune tâche trouvée. Cliquez sur le bouton ci-dessus pour en créer une.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 @(item.IsCompleted ? "border-success" : "border-warning")">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p class="card-text text-muted small">
+                                Créé le : @item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")
+                            </p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <span class="badge @(item.IsCompleted ? "bg-success" : "bg-warning text-dark")">
+                                    @(item.IsCompleted ? "Terminé" : "Ouvert")
+                                </span>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Détails">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Éditer">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</div>
