@@ -1,0 +1,46 @@
+@model IEnumerable<TaskManagerApp.Models.TaskItem>
+@{
+    ViewData["Title"] = "Mes tâches";
+}
+
+<partial name="_Notification" />
+
+<h1>@ViewData["Title"]</h1>
+<p><a asp-action="Create" class="btn btn-primary">Nouvelle tâche</a></p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Créé le</th>
+            <th>Statut</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
+            <td>
+                @if (item.IsCompleted)
+                {
+                    <span class="badge bg-success">Terminé</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Ouvert</span>
+                }
+            </td>
+            <td class="text-end">
+                <div class="btn-group btn-group-sm" role="group">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Voir</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Éditer</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Supprimer</a>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,24 @@
+@if (TempData["NotificationMessage"] != null)
+{
+    var notification = TempData["NotificationMessage"].ToString();
+    // Simple parsing for different alert types, e.g., "success:Task created!"
+    // This allows for different colors (success, danger, warning, info)
+    var parts = notification.Split(new[] { ':' }, 2);
+    var notificationType = parts.Length > 1 ? parts[0] : "success";
+    var message = parts.Length > 1 ? parts[1] : notification;
+
+    var alertClass = $"alert-{notificationType}";
+
+    <div id="notification-alert" class="alert @alertClass alert-dismissible fade show" role="alert">
+        @message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <script>
+        // Optional: Auto-hide the alert after 5 seconds
+        window.setTimeout(function() {
+            var alert = document.getElementById('notification-alert');
+            if (alert) { new bootstrap.Alert(alert).close(); }
+        }, 5000);
+    </script>
+}
