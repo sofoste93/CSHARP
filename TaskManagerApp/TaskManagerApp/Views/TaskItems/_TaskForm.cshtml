@@ -1,0 +1,13 @@
+@model TaskItem
+<form method="post" class="editor-card">
+    @if (Model.Id > 0) { <input type="hidden" asp-for="Id" /> }
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <label class="field"><span>@T["Title"]</span><input asp-for="Title" maxlength="100" autofocus /><small><span asp-validation-for="Title"></span><b data-count-for="Title">0 / 100</b></small></label>
+    <label class="field"><span>@T["Description"]</span><textarea asp-for="Description" rows="7" maxlength="1000"></textarea><small><span asp-validation-for="Description"></span><b data-count-for="Description">0 / 1000</b></small></label>
+    <div class="form-grid">
+        <label class="field"><span>@T["Priority"]</span><select asp-for="Priority"><option value="0">@T["Low"]</option><option value="1">@T["Normal"]</option><option value="2">@T["High"]</option><option value="3">@T["Critical"]</option></select></label>
+        <label class="field"><span>@T["Due"]</span><input asp-for="DueDate" type="date" /></label>
+    </div>
+    @if (Model.Id > 0) { <label class="check-field"><input asp-for="IsCompleted" type="checkbox" /><i></i><span>@T["Completed"]</span></label> }
+    <div class="form-actions"><button class="button primary" type="submit">@(Model.Id > 0 ? T["Update"] : T["Save"])</button><a class="button secondary" asp-action="Index">@T["Cancel"]</a></div>
+</form>

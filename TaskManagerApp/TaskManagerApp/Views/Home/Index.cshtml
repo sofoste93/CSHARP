@@ -1,8 +1,18 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@{ ViewData["Title"] = T["Home"]; }
+<section class="hero">
+    <div class="hero-copy">
+        <span class="eyebrow">PULSAR / TASK ORBIT 2.0</span>
+        <h1>@T["HeroTitle"]</h1><p>@T["HeroText"]</p>
+        <div class="hero-actions">
+            @if (User.Identity?.IsAuthenticated == true) { <a class="button primary" asp-controller="TaskItems" asp-action="Index">@T["OpenBoard"] <span>→</span></a> }
+            else { <a class="button primary" asp-area="Identity" asp-page="/Account/Register">@T["CreateAccount"] <span>→</span></a><a class="button secondary" asp-area="Identity" asp-page="/Account/Login">@T["SignIn"]</a> }
+        </div>
+        <div class="hero-meta"><span><i></i> LOCAL SQLITE</span><span><i></i> EN / DE</span><span><i></i> ZERO TRACKING</span></div>
+    </div>
+    <div class="pulsar-visual" aria-hidden="true"><div class="pulsar-core"><i></i></div><div class="pulse-ring ring-a"></div><div class="pulse-ring ring-b"></div><div class="beam beam-a"></div><div class="beam beam-b"></div><div class="orbit-label one">FOCUS</div><div class="orbit-label two">MOMENTUM</div><div class="orbit-label three">DONE</div></div>
+</section>
+<section class="feature-grid">
+    <article><span class="feature-number">01</span><div class="feature-icon">◎</div><h2>@T["LocalPrivate"]</h2><p>@T["LocalPrivateText"]</p></article>
+    <article><span class="feature-number">02</span><div class="feature-icon">⌁</div><h2>@T["Fast"]</h2><p>@T["FastText"]</p></article>
+    <article><span class="feature-number">03</span><div class="feature-icon">◇</div><h2>@T["CrossPlatform"]</h2><p>@T["CrossPlatformText"]</p></article>
+</section>

@@ -5,11 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-TaskManagerApp-b346fd37-635b-44cf-bc88-d1803cd0b0a0</UserSecretsId>
+    <Version>2.0.0</Version>
+    <AssemblyName>VioletPulsar</AssemblyName>
+    <Product>Violet Pulsar</Product>
+    <Description>Private cross-platform mission board</Description>
+    <Copyright>Copyright 2026 Stephane Sob Fouodji</Copyright>
+    <ApplicationIcon Condition="$([MSBuild]::IsOSPlatform('Windows'))">Assets\pulsar.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.6" />

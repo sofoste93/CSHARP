@@ -1,44 +1,9 @@
-@model TaskManagerApp.Models.TaskItem
-@{
-    ViewData["Title"] = "Détails de la tâche";
-}
-
-<div class="container my-4">
-    <h2 class="mb-4">
-        <i class="bi bi-info-circle"></i> @ViewData["Title"]
-    </h2>
-
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <h4 class="card-title mb-4">@Model.Title</h4>
-            
-            <dl class="row">
-                <dt class="col-sm-3 fw-bold">Titre</dt>
-                <dd class="col-sm-9">@Model.Title</dd>
-
-                <dt class="col-sm-3 fw-bold">Description</dt>
-                <dd class="col-sm-9">@Model.Description</dd>
-
-                <dt class="col-sm-3 fw-bold">Créé le</dt>
-                <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</dd>
-
-                <dt class="col-sm-3 fw-bold">Statut</dt>
-                <dd class="col-sm-9">
-                    <span class="badge @(Model.IsCompleted ? "bg-success" : "bg-warning text-dark")">
-                        @(Model.IsCompleted ? "Terminé" : "Ouvert")
-                    </span>
-                </dd>
-            </dl>
-
-            <hr />
-            <div class="d-flex gap-2">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
-                    <i class="bi bi-pencil-square"></i> Éditer
-                </a>
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left-circle"></i> Retour
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+@model TaskItem
+@{ ViewData["Title"] = T["DetailsTitle"]; }
+<section class="editor-layout"><header><a asp-action="Index">← @T["Back"]</a><span class="eyebrow">MISSION VP-@Model.Id.ToString("D4")</span><h1>@T["DetailsTitle"]</h1></header>
+<article class="detail-card priority-@Model.Priority.ToString().ToLowerInvariant()">
+    <div class="detail-status"><span class="priority-chip">@T[Model.Priority.ToString()]</span><strong class="@(Model.IsCompleted ? "done" : "open")">@(Model.IsCompleted ? T["Completed"] : T["Open"])</strong></div>
+    <h2>@Model.Title</h2><p class="detail-description">@(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)</p>
+    <dl><div><dt>@T["Created"]</dt><dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy · HH:mm")</dd></div><div><dt>@T["Due"]</dt><dd>@(Model.DueDate?.ToString("dd MMMM yyyy") ?? T["NoDueDate"])</dd></div><div><dt>@T["Priority"]</dt><dd>@T[Model.Priority.ToString()]</dd></div></dl>
+    <div class="form-actions"><a class="button primary" asp-action="Edit" asp-route-id="@Model.Id">@T["Edit"]</a><a class="button secondary" asp-action="Delete" asp-route-id="@Model.Id">@T["Delete"]</a></div>
+</article></section>

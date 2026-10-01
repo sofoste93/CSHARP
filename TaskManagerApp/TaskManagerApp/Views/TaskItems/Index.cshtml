@@ -1,113 +1,45 @@
-@model IEnumerable<TaskManagerApp.Models.TaskItem>
-@{
-    ViewData["Title"] = "Tableau de bord des tâches";
-}
-
+@model TaskDashboardViewModel
+@{ ViewData["Title"] = T["Dashboard"]; var returnUrl = Context.Request.Path + Context.Request.QueryString; }
 <partial name="_Notification" />
 
-<div class="container my-4">
+<section class="dashboard-head">
+    <div><span class="eyebrow">@T["DashboardEyebrow"]</span><h1>@T["Dashboard"]</h1><p>@T["DashboardIntro"]</p></div>
+    <a class="button primary" asp-action="Create"><span>＋</span> @T["NewTask"]</a>
+</section>
 
-    <!-- Page Title & Create Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-grid"></i> Tableau de bord des tâches</h2>
-        <a asp-action="Create" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-circle"></i> Nouvelle tâche
-        </a>
-    </div>
+<section class="metric-grid">
+    <a asp-action="Index" class="metric @(Model.Filter == "all" ? "active" : "")"><span>@T["Total"]</span><strong>@Model.Total</strong><i style="--meter:100%"></i></a>
+    <a asp-action="Index" asp-route-filter="open" class="metric @(Model.Filter == "open" ? "active" : "")"><span>@T["Open"]</span><strong>@Model.Open</strong><i style="--meter:@(Model.Total == 0 ? 0 : Model.Open * 100 / Model.Total)%"></i></a>
+    <a asp-action="Index" asp-route-filter="completed" class="metric @(Model.Filter == "completed" ? "active" : "")"><span>@T["Completed"]</span><strong>@Model.Completed</strong><i style="--meter:@(Model.Total == 0 ? 0 : Model.Completed * 100 / Model.Total)%"></i></a>
+    <a asp-action="Index" asp-route-filter="overdue" class="metric danger @(Model.Filter == "overdue" ? "active" : "")"><span>@T["Overdue"]</span><strong>@Model.Overdue</strong><i style="--meter:@(Model.Total == 0 ? 0 : Model.Overdue * 100 / Model.Total)%"></i></a>
+</section>
 
-    @{
-        // Summary Stats
-        var totalTasks = Model.Count();
-        var completedTasks = Model.Count(t => t.IsCompleted);
-        var openTasks = totalTasks - completedTasks;
-    }
+<form method="get" class="filter-bar">
+    <div class="search-field"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" name="search" value="@Model.Search" placeholder="@T["SearchPlaceholder"]" aria-label="@T["Search"]" /></div>
+    <select name="filter" aria-label="Filter"><option value="all" selected="@(Model.Filter == "all")">@T["All"]</option><option value="open" selected="@(Model.Filter == "open")">@T["Open"]</option><option value="completed" selected="@(Model.Filter == "completed")">@T["Completed"]</option><option value="overdue" selected="@(Model.Filter == "overdue")">@T["Overdue"]</option></select>
+    <select name="sort" aria-label="Sort"><option value="newest" selected="@(Model.Sort == "newest")">@T["Newest"]</option><option value="due" selected="@(Model.Sort == "due")">@T["DueSoon"]</option><option value="priority" selected="@(Model.Sort == "priority")">@T["PrioritySort"]</option></select>
+    <button class="button secondary" type="submit">@T["Apply"]</button>
+</form>
 
-    <!-- Summary Cards -->
-    <div class="row g-4 mb-4 text-center">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex flex-column align-items-center">
-                    <i class="bi bi-list-task display-5 text-primary mb-3"></i>
-                    <h5 class="card-title">Toutes les tâches</h5>
-                    <p class="fs-3 fw-bold text-primary">@totalTasks</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex flex-column align-items-center">
-                    <i class="bi bi-check-circle display-5 text-success mb-3"></i>
-                    <h5 class="card-title">Tâches terminées</h5>
-                    <p class="fs-3 fw-bold text-success">@completedTasks</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex flex-column align-items-center">
-                    <i class="bi bi-exclamation-circle display-5 text-warning mb-3"></i>
-                    <h5 class="card-title">Tâches ouvertes</h5>
-                    <p class="fs-3 fw-bold text-warning">@openTasks</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter Buttons -->
-    <div class="mb-4 d-flex flex-wrap gap-2">
-        <a asp-action="Index" class="btn btn-outline-primary @(string.IsNullOrEmpty(Context.Request.Query["filter"]) ? "active" : "")">
-            Toutes [@totalTasks]
-        </a>
-        <a asp-action="Index" asp-route-filter="open" class="btn btn-outline-warning @(Context.Request.Query["filter"] == "open" ? "active" : "")">
-            Ouvertes [@openTasks]
-        </a>
-        <a asp-action="Index" asp-route-filter="completed" class="btn btn-outline-success @(Context.Request.Query["filter"] == "completed" ? "active" : "")">
-            Terminées [@completedTasks]
-        </a>
-    </div>
-
-    <!-- Task Cards -->
-    @if (!Model.Any())
+@if (!Model.Tasks.Any())
+{
+    <section class="empty-state"><div class="empty-pulsar"><i></i></div><h2>@T["NoTasks"]</h2><p>@T["NoTasksText"]</p><a class="button primary" asp-action="Create">@T["NewTask"]</a></section>
+}
+else
+{
+    <section class="task-grid">
+    @foreach (var item in Model.Tasks)
     {
-        <div class="alert alert-info text-center">
-            Aucune tâche trouvée. Cliquez sur le bouton ci-dessus pour en créer une.
-        </div>
+        var overdue = !item.IsCompleted && item.DueDate.HasValue && item.DueDate.Value.Date < DateTime.UtcNow.Date;
+        <article class="task-card priority-@item.Priority.ToString().ToLowerInvariant() @(item.IsCompleted ? "complete" : "")">
+            <div class="task-top"><span class="priority-chip">@T[item.Priority.ToString()]</span><span class="task-id">VP-@item.Id.ToString("D4")</span></div>
+            <h2>@item.Title</h2><p>@(string.IsNullOrWhiteSpace(item.Description) ? "—" : item.Description)</p>
+            <div class="task-meta"><span>@T["Created"] <b>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</b></span><span class="@(overdue ? "overdue" : "")">@T["Due"] <b>@(item.DueDate?.ToString("dd MMM yyyy") ?? T["NoDueDate"])</b></span></div>
+            <div class="task-actions">
+                <form asp-action="Toggle" asp-route-id="@item.Id" method="post"><input type="hidden" name="returnUrl" value="@returnUrl"/><button class="complete-control" type="submit"><i>✓</i> @(item.IsCompleted ? T["Reopen"] : T["MarkDone"])</button></form>
+                <div><a asp-action="Details" asp-route-id="@item.Id">@T["Details"]</a><a asp-action="Edit" asp-route-id="@item.Id">@T["Edit"]</a><a class="delete-link" asp-action="Delete" asp-route-id="@item.Id">@T["Delete"]</a></div>
+            </div>
+        </article>
     }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var item in Model)
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm h-100 @(item.IsCompleted ? "border-success" : "border-warning")">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">@item.Title</h5>
-                            <p class="card-text text-muted small">
-                                Créé le : @item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")
-                            </p>
-                            <div class="mt-auto d-flex justify-content-between align-items-center">
-                                <span class="badge @(item.IsCompleted ? "bg-success" : "bg-warning text-dark")">
-                                    @(item.IsCompleted ? "Terminé" : "Ouvert")
-                                </span>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Détails">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Éditer">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Supprimer">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-
-</div>
+    </section>
+}

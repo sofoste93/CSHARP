@@ -1,23 +1,4 @@
-@model TaskManagerApp.Models.TaskItem
-@{
-    ViewData["Title"] = "Supprimer la tâche";
-}
-
-<h1>@ViewData["Title"]</h1>
-
-<div class="alert alert-warning">
-    <h4>Es-tu sûr de vouloir supprimer cette tâche ?</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Titre</dt>
-        <dd class="col-sm-10">@Model.Title</dd>
-        <dt class="col-sm-2">Description</dt>
-        <dd class="col-sm-10">@Model.Description</dd>
-    </dl>
-</div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Supprimer</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
-</form>
+@model TaskItem
+@{ ViewData["Title"] = T["DeleteTitle"]; }
+<section class="editor-layout danger-zone"><header><a asp-action="Index">← @T["Back"]</a><span class="eyebrow">IRREVERSIBLE ACTION</span><h1>@T["ConfirmDelete"]</h1><p>@T["DeleteWarning"]</p></header>
+<article class="delete-card"><span class="priority-chip">@T[Model.Priority.ToString()]</span><h2>@Model.Title</h2><p>@Model.Description</p><form method="post"><input type="hidden" asp-for="Id"/><div class="form-actions"><button class="button danger" type="submit">@T["Delete"]</button><a class="button secondary" asp-action="Index">@T["Cancel"]</a></div></form></article></section>

@@ -1,67 +1,65 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TaskManagerApp</title>
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Custom Styles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090716" />
+    <meta name="description" content="Violet Pulsar — private cross-platform task orbit." />
+    <title>@ViewData["Title"] · @T["AppName"]</title>
+    <link rel="icon" href="~/images/pulsar-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/TaskManagerApp.styles.css" asp-append-version="true" />
-
-    <!-- Optional: Add dark mode styles here if needed -->
-    @RenderSection("Styles", required: false)
+    @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="d-flex flex-column min-vh-100">
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TaskManagerApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="TaskItems" asp-action="Index">Mes tâches</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Confidentialité</a>
-                            </li>
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
+<body>
+    <div class="cosmos" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
+    <header class="topbar">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="7"/><path d="M4 26c11-8 29-10 40-4M9 33c11-5 23-7 34-5"/><path d="M24 4v8M24 36v8"/></svg>
+            <span><b>VIOLET PULSAR</b><small>@T["Tagline"]</small></span>
+        </a>
+        <button class="mobile-menu" type="button" data-menu-toggle aria-label="Menu"><span></span><span></span></button>
+        <nav class="main-nav" data-menu>
+            <a asp-controller="Home" asp-action="Index">@T["Home"]</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="TaskItems" asp-action="Index">@T["Tasks"]</a>
+            }
+            <a asp-controller="Home" asp-action="Privacy">@T["Privacy"]</a>
         </nav>
+        <div class="top-actions">
+            <span class="signal"><i></i> PULSAR ONLINE</span>
+            <button class="icon-control" type="button" data-settings-open aria-label="@T["Settings"]" title="@T["Settings"]">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm8.5 3.6-.1-1.4 2-1.6-2-3.5-2.6 1a9 9 0 0 0-2.2-1.3L15.1 3H9l-.5 2.2a9 9 0 0 0-2.2 1.3l-2.5-1-2 3.5 2 1.6a9 9 0 0 0 0 2.8l-2 1.6 2 3.5 2.5-1a9 9 0 0 0 2.2 1.3L9 21h6l.5-2.2a9 9 0 0 0 2.2-1.3l2.6 1 2-3.5-2-1.6.2-1.4Z"/></svg>
+            </button>
+            <partial name="_LoginPartial" />
+        </div>
     </header>
 
-    <main role="main" class="flex-grow-1 container py-4">
-        @RenderBody()
-    </main>
+    <main class="page-shell">@RenderBody()</main>
 
-    <footer class="border-top footer text-muted bg-light mt-auto">
-        <div class="container text-center text-md-start d-md-flex justify-content-between align-items-center py-3">
-            <div>&copy; 2025 - TaskManagerApp</div>
-            <div><a asp-area="" asp-controller="Home" asp-action="Privacy">Politique de confidentialité</a></div>
-        </div>
+    <footer class="footer">
+        <span>© 2026 @T["AppName"] · @T["Footer"]</span>
+        <span class="footer-signal">THOR // SIGNAL STABLE</span>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <dialog class="settings-dialog" data-settings-dialog>
+        <form asp-controller="Preferences" asp-action="Culture" method="post" class="settings-card" data-settings-form>
+            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+            <div class="modal-head"><div><span class="eyebrow">ORBIT CONFIG</span><h2>@T["Settings"]</h2></div><button type="button" class="icon-control" data-settings-close aria-label="@T["Close"]">×</button></div>
+            <label class="setting-row"><span><b>@T["Language"]</b><small>English / Deutsch</small></span>
+                <select name="culture" data-culture><option value="en">English</option><option value="de">Deutsch</option></select>
+            </label>
+            <label class="setting-row"><span><b>@T["Theme"]</b><small>@T["ThemeHelp"]</small></span>
+                <select data-theme><option value="dark">@T["Dark"]</option><option value="light">@T["Light"]</option><option value="system">@T["System"]</option></select>
+            </label>
+            <label class="setting-row"><span><b>@T["Density"]</b><small>@T["DensityHelp"]</small></span><input type="checkbox" role="switch" data-compact /></label>
+            <label class="setting-row"><span><b>@T["Motion"]</b><small>@T["MotionHelp"]</small></span><input type="checkbox" role="switch" data-reduced-motion /></label>
+            <button class="button primary full" type="submit">@T["SaveSettings"]</button>
+        </form>
+    </dialog>
+
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+    <script>window.pulsarCulture = '@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName';</script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

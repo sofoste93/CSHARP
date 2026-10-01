@@ -1,0 +1,99 @@
+name: Release cross-platform apps
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            asset: Violet-Pulsar-Windows-x64
+            windows: true
+          - os: ubuntu-latest
+            rid: linux-x64
+            asset: Violet-Pulsar-Linux-x64
+            windows: false
+          - os: macos-15-intel
+            rid: osx-x64
+            asset: Violet-Pulsar-macOS-x64
+            windows: false
+          - os: macos-14
+            rid: osx-arm64
+            asset: Violet-Pulsar-macOS-arm64
+            windows: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Build and verify
+        run: dotnet build CSHARP.sln --configuration Release
+      - name: Publish Windows
+        if: matrix.windows
+        shell: pwsh
+        run: ./scripts/package.ps1 -Runtime ${{ matrix.rid }}
+      - name: Sign Windows executable when certificate is configured
+        if: matrix.windows && env.WINDOWS_CERTIFICATE_BASE64 != ''
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          $certificate = Join-Path $env:RUNNER_TEMP 'violet-pulsar.pfx'
+          [IO.File]::WriteAllBytes($certificate, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE_BASE64))
+          signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /f $certificate /p $env:WINDOWS_CERTIFICATE_PASSWORD artifacts/Violet-Pulsar-win-x64/VioletPulsar.exe
+          Remove-Item -LiteralPath $certificate -Force
+      - name: Archive Windows
+        if: matrix.windows
+        shell: pwsh
+        run: Compress-Archive -Path artifacts/Violet-Pulsar-win-x64 -DestinationPath ${{ matrix.asset }}.zip
+      - name: Publish Unix
+        if: ${{ !matrix.windows }}
+        run: bash scripts/package.sh ${{ matrix.rid }}
+      - name: Archive Unix
+        if: ${{ !matrix.windows }}
+        run: tar -C artifacts -czf ${{ matrix.asset }}.tar.gz Violet-Pulsar-${{ matrix.rid }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}.*
+          if-no-files-found: error
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - name: Create checksums
+        run: cd release && sha256sum Violet-Pulsar-* > SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Violet Pulsar 2.0.0 · First Pulse
+          body: |
+            ## A task orbit with a pulse 🟣
+
+            Violet Pulsar rebuilds the original C# task manager as a private, bilingual mission board with search, priorities, deadlines, settings and automatic database migrations.
+
+            Every archive includes the .NET runtime. Extract it and launch `VioletPulsar.exe` on Windows or `VioletPulsar` on Linux/macOS — no SDK installation required. The application opens in your browser and stores its data locally.
+
+            ### First Pulse systems
+            - English and German interface
+            - Deep-space and starlight themes
+            - Per-account task isolation
+            - Search, filters, priorities, deadlines and quick completion
+            - Windows, Linux, macOS Intel and Apple Silicon builds
+          files: release/*
+          fail_on_unmatched_files: true

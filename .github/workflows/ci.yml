@@ -1,0 +1,25 @@
+name: Continuous integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore
+        run: dotnet restore CSHARP.sln
+      - name: Build
+        run: dotnet build CSHARP.sln --configuration Release --no-restore
+      - name: Runtime and database diagnostic
+        run: dotnet run --project TaskManagerApp/TaskManagerApp/TaskManagerApp.csproj --configuration Release --no-build -- --diagnostics

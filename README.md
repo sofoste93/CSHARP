@@ -1,81 +1,98 @@
-# TaskManagerApp
+# Violet Pulsar · Task Orbit
 
-A simple task management web application built with ASP.NET Core MVC. This project serves as a practical example of building a web application with CRUD (Create, Read, Update, Delete) functionality. The user interface is in French.
+<p align="center">
+  <img src="TaskManagerApp/TaskManagerApp/wwwroot/images/pulsar-mark.svg" width="150" alt="Violet Pulsar logo">
+</p>
+
+<p align="center">
+  <strong>A private bilingual mission board built with ASP.NET Core.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/sofoste93/CSHARP/releases/latest"><strong>Download Violet Pulsar</strong></a>
+  ·
+  <a href="#features">Features</a>
+  ·
+  <a href="#data-and-privacy">Data</a>
+</p>
+
+![Violet Pulsar interface](docs/violet-pulsar-preview.png)
+
+## From task list to mission control
+
+Violet Pulsar 2.0 rebuilds the original C# task manager as a focused, cross-platform workspace. The application runs locally, opens in your browser and isolates every mission by user account.
 
 ## Features
 
-*   **List Tasks**: View all tasks with their title, creation date, and status.
-*   **Create Task**: Add a new task with a title and description.
-*   **View Details**: See the detailed information for a specific task.
-*   **Edit Task**: Modify the title, description, and completion status of an existing task.
-*   **Delete Task**: Remove a task from the list.
-*   **Notifications**: Display success/error messages to the user after performing an action.
-*   **Validation**: Both client-side and server-side validation for form inputs.
+- Secure account registration and sign-in with ASP.NET Core Identity
+- English and German interface with a persistent language selector
+- Search, open/completed/overdue filters and flexible sorting
+- Four priority levels and optional due dates
+- Quick completion and one-click mission recall
+- Dashboard metrics with live task status
+- Deep-space, starlight and system themes
+- Compact layout and reduced-motion settings
+- Automatic SQLite schema migrations on startup
+- Local-only storage with no advertising, tracking or cloud dependency
+- Self-contained Windows, Linux and macOS releases
 
-## Technology Stack
+## Install
 
-*   **Backend**: C#, ASP.NET Core MVC
-*   **Database**: Entity Framework Core (designed to work with providers like SQL Server, SQLite, or an in-memory database).
-*   **Frontend**:
-    *   HTML5 & CSS3
-    *   Bootstrap 5 for styling and responsive UI components.
-    *   jQuery for client-side scripting.
-    *   jQuery Validation & jQuery Unobtrusive Validation for seamless client-side form validation.
-*   **Templating**: Razor Pages
+Download the archive for your system from [GitHub Releases](https://github.com/sofoste93/CSHARP/releases/latest). The .NET runtime is included.
 
-## Getting Started
+| System | Download | Launch |
+|---|---|---|
+| Windows 10/11 x64 | `Violet-Pulsar-Windows-x64.zip` | `VioletPulsar.exe` |
+| Linux x64 | `Violet-Pulsar-Linux-x64.tar.gz` | `./VioletPulsar` |
+| macOS Intel | `Violet-Pulsar-macOS-x64.tar.gz` | `./VioletPulsar` |
+| macOS Apple Silicon | `Violet-Pulsar-macOS-arm64.tar.gz` | `./VioletPulsar` |
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+Extract the archive and launch the executable. Violet Pulsar starts a loopback-only web server at `http://127.0.0.1:5274` and opens the default browser. Stop the application by closing its terminal window or pressing `Ctrl+C`.
 
-### Prerequisites
+macOS may require **Control-click → Open** for the first launch. Windows can show a SmartScreen warning until a publicly trusted Authenticode certificate is configured; the release workflow is signing-ready through [SIGNING.md](SIGNING.md).
 
-*   [.NET SDK](https://dotnet.microsoft.com/download) (version 9.0 or later, as specified in the project files).
-*   An IDE like [Visual Studio 2022](https://visualstudio.microsoft.com/) or [Visual Studio Code](https://code.visualstudio.com/).
-*   A database server like SQL Server (including LocalDB), or you can configure it to use SQLite or an in-memory database.
+## Data and privacy
 
-### Installation & Setup
+The SQLite database is stored outside the application directory:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/sofoste93/CSHARP.git
-    cd TaskManagerApp
-    ```
+| System | Data directory |
+|---|---|
+| Windows | `%LOCALAPPDATA%\Violet Pulsar` |
+| macOS | `~/Library/Application Support/Violet Pulsar` |
+| Linux | `$XDG_DATA_HOME/violet-pulsar` or `~/.local/share/violet-pulsar` |
 
-2.  **Restore dependencies:**
-    Open a terminal in the project root directory (`TaskManagerApp/`) and run:
-    ```bash
-    dotnet restore
-    ```
+Set `VIOLET_PULSAR_DATA_DIR` to choose another directory. Existing users can migrate by placing the old `TaskManagerApp.db` beside the executable before the first launch; Violet Pulsar detects, copies and upgrades it automatically.
 
-3.  **Database Setup:**
-    The project is likely configured to use Entity Framework Core migrations.
-    *   Ensure your `appsettings.json` has the correct database connection string.
-    *   Apply the migrations to create the database schema:
-    ```bash
-    dotnet ef database update
-    ```
+The server listens only on the local device by default. Account and task records never leave the SQLite database, and the application contains no telemetry or third-party runtime resources.
 
-4.  **Run the application:**
-    ```bash
-    dotnet run
-    ```
+## Development
 
-5.  **Access the application:**
-    Open your web browser and navigate to the URL provided in the console output (e.g., `https://localhost:5266`).
+Requirements: .NET SDK 9.0 or newer.
 
-## Project Structure
+```bash
+dotnet restore
+dotnet build CSHARP.sln --configuration Release
+dotnet run --project TaskManagerApp/TaskManagerApp
+```
 
-The project follows the standard ASP.NET Core MVC structure:
+Run the isolated database and migration health check:
 
-*   `\Controllers`: Contains the MVC controllers that handle user requests and business logic.
-    *   `TaskItemsController.cs`: Manages the CRUD operations for tasks.
-*   `\Models`: Contains the data models.
-    *   `TaskItem.cs`: Represents a single task entity.
-*   `\Views`: Contains the Razor files for the UI.
-    *   `\TaskItems`: Views for creating, deleting, viewing details, editing, and listing tasks.
-*   `\wwwroot`: Contains static client-side assets like CSS, JavaScript, and third-party libraries (Bootstrap, jQuery).
-*   `\Data`: (Likely location) Contains the `DbContext` and migration files for Entity Framework Core.
+```bash
+dotnet run --project TaskManagerApp/TaskManagerApp -- --diagnostics
+```
+
+Create a self-contained app:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/package.ps1 -Runtime win-x64
+```
+
+```bash
+bash scripts/package.sh linux-x64
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+Copyright © 2026 Stephane Sob Fouodji. Released under the [MIT License](LICENSE).
+
+**THOR // violet pulse synchronized.** 🟣🛰️
